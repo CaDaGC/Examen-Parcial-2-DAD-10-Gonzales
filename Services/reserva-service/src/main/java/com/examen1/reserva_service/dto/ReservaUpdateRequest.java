@@ -38,5 +38,5 @@ public class ReservaUpdateRequest {
     private Double precio;
 
     @NotBlank(message = "El estado es obligatorio")
-    private String estado; // Permite al ADMIN cambiar a CONFIRMADA, CANCELADA, etc.
+    private String estado;
 }

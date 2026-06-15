@@ -38,16 +38,14 @@ public class ReservaServiceImpl implements ReservaService {
     @Override
     @Transactional
     public ReservaResponse cancelarReservaPorCliente(Long id, String dniCliente) {
-        // Buscamos la reserva
+
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("La reserva con ID " + id + " no existe."));
 
-        // Validación crítica de seguridad: El DNI del cliente debe coincidir con el DNI del dueño de la reserva
         if (!reserva.getDniCliente().equals(dniCliente)) {
             throw new RuntimeException("No tienes permisos para cancelar esta reserva.");
         }
 
-        // Cambiamos el estado a CANCELADA en lugar de borrarla físicamente
         reserva.setEstado("CANCELADA");
         Reserva reservaActualizada = reservaRepository.save(reserva);
 
@@ -75,7 +73,6 @@ public class ReservaServiceImpl implements ReservaService {
         Reserva reservaExistente = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con el ID: " + id));
 
-        // Usamos nuestro método del mapper manual para volcar los cambios del DTO a la entidad
         reservaMapper.updateEntityFromDto(request, reservaExistente);
 
         Reserva reservaActualizada = reservaRepository.save(reservaExistente);

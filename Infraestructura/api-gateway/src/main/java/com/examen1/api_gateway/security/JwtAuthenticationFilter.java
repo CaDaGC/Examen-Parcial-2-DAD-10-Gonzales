@@ -21,12 +21,10 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
         String method = exchange.getRequest().getMethod().name();
 
-        // 1. Si la ruta es pública, pasa directo sin validar token
         if (isPublicRoute(path, method)) {
             return chain.filter(exchange);
         }
 
-        // 2. Extraer y validar la cabecera Authorization
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
@@ -38,13 +36,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
         String token = authHeader.substring(7);
 
-        // 3. Validar la firma y expiración del JWT
         if (!jwtUtil.isValid(token)) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
 
-        // 4. Validar si la ruta requiere estrictamente rol de ADMINISTRADOR
         if (isAdminRoute(path, method)) {
             String rol = jwtUtil.getRol(token);
 
@@ -54,7 +50,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             }
         }
 
-        // Si pasó todas las validaciones (o es una ruta permitida para CLIENTE), continúa
         return chain.filter(exchange);
     }
 
@@ -64,20 +59,18 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isAdminRoute(String path, String method) {
-        // Reglas para Usuarios
+
         if (path.startsWith("/api/v1/usuarios")) {
             return true;
         }
 
-        // Reglas críticas para RESERVAS:
         if (path.startsWith("/api/v1/reservas")) {
-            // El CLIENTE SÍ PUEDE hacer POST (crear), GET a su DNI y PATCH (cancelar).
-            // Por lo tanto, si NO es ninguna de esas, entonces es una ruta exclusiva del ADMIN.
+
             boolean isClienteAllowed = "POST".equals(method)
                     || ("GET".equals(method) && path.contains("/api/v1/reservas/dni/"))
                     || "PATCH".equals(method);
 
-            return !isClienteAllowed; // Si no está permitido para el cliente, es ruta de ADMIN
+            return !isClienteAllowed;
         }
 
         return false;

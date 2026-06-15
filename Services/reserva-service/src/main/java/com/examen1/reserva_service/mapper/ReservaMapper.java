@@ -24,12 +24,10 @@ public class ReservaMapper {
         reserva.setFechaViaje(request.getFechaViaje());
         reserva.setAsiento(request.getAsiento());
         reserva.setPrecio(request.getPrecio());
-        // Nota: El estado y la fecha de reserva se gestionan automáticamente en el @PrePersist del modelo
 
         return reserva;
     }
 
-    // Convierte la entidad de la Base de Datos al DTO de salida
     public ReservaResponse toResponse(Reserva reserva) {
         if (reserva == null) {
             return null;
@@ -49,7 +47,7 @@ public class ReservaMapper {
         return response;
     }
 
-    // Convierte listas de entidades a listas de respuestas DTO
+
     public List<ReservaResponse> toResponseList(List<Reserva> reservas) {
         if (reservas == null) {
             return null;
@@ -62,7 +60,7 @@ public class ReservaMapper {
         return list;
     }
 
-    // Método utilitario para actualizar una entidad existente con los datos modificados por el ADMIN
+
     public void updateEntityFromDto(ReservaUpdateRequest request, Reserva reserva) {
         if (request == null || reserva == null) {
             return;
@@ -74,6 +72,6 @@ public class ReservaMapper {
         reserva.setFechaViaje(request.getFechaViaje());
         reserva.setAsiento(request.getAsiento());
         reserva.setPrecio(request.getPrecio());
-        reserva.setEstado(request.getEstado()); // El admin sí puede forzar el cambio de estado
+        reserva.setEstado(request.getEstado());
     }
 }
